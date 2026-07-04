@@ -2,16 +2,15 @@ import express from "express";
 import { db } from "../db/index.js";
 import { eq } from "drizzle-orm";
 import { usersTable } from "../models/users.models.js";
-import { randomBytes, createHmac } from "node:crypto";
 import { signUpPostRequestSchema } from "../validations/request.validations.js";
+import { hashPasswordWithSalt } from "../utils/hash.utils.js";
+import { getUserByEmail, createUser } from "../services/users.services.js";
 
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const validationsResult = await signUpPostRequestSchema.safeParseAsync(
-      req.body,
-    );
+    const validationsResult = await signUpPostRequestSchema.safeParseAsync(req.body);
 
     if (!validationsResult.success) {
       return res.status(400).json({
@@ -20,13 +19,7 @@ router.post("/signup", async (req, res) => {
     }
 
     const { firstName, lastName, email, password } = validationsResult.data;
-
-    const [existingUser] = await db
-      .select({
-        id: usersTable.id,
-      })
-      .from(usersTable)
-      .where(eq(usersTable.email, email));
+    const existingUser = await getUserByEmail(email);
 
     if (existingUser) {
       return res
@@ -34,21 +27,17 @@ router.post("/signup", async (req, res) => {
         .json({ error: `User with email ${email} already exists!` });
     }
 
-    const salt = randomBytes(256).toString("hex");
-    const hashedPassword = createHmac("sha256", salt)
-      .update(password)
-      .digest("hex");
+    // Hashing Password
+    const { salt, password: hashedPassword } = hashPasswordWithSalt(password);
 
-    const [user] = await db
-      .insert(usersTable)
-      .values({
-        email,
-        firstName,
-        lastName,
-        password: hashedPassword,
-        salt,
-      })
-      .returning({ id: usersTable.id });
+    // Create a New User
+    const user = await createUser({
+      email,
+      firstName,
+      lastName,
+      password: hashedPassword,
+      salt,
+    });
 
     return res.status(201).json({ data: { userId: user.id } });
   } catch (error) {

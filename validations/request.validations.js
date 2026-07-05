@@ -29,3 +29,8 @@ export const loginPostRequestBodySchema = z.object({
     .min(1, "Password is required.")
     .min(6, "Password must be at least 6 characters long."),
 });
+
+export const shortenPostRequestBodySchema = z.object({
+  url: z.string().url('Please enter a valid url address.'),
+  code: z.string().optional(),
+});

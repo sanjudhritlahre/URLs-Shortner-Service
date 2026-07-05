@@ -1,0 +1,7 @@
+POST http://localhost:8000/shorten
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlNTJhYjJiLWMzMGItNDI4Ny05NGNlLTI5NDAzNTA5MWQyYyIsImlhdCI6MTc4MzI4NDUwMywiZXhwIjoxNzgzODg5MzAzfQ.cEZaT8hV0Y27RvVcmHisOkkr2d0jPz3rIUzWLGUzCRw
+
+{
+    "url": "https://github.com/sanjudhritlahre"
+}

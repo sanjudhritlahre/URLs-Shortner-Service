@@ -3,7 +3,7 @@ import { userTokenSchema } from "../validations/token.validations.js";
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
-export const createUserToken = async (payload) => {
+export async function createUserToken(payload) {
   const validationResult = await userTokenSchema.safeParseAsync(payload);
 
   if (!validationResult.success) {
@@ -14,9 +14,9 @@ export const createUserToken = async (payload) => {
 
   const token = jwt.sign(payloadValidatedData, JWT_SECRET, { expiresIn: "7d" });
   return token;
-};
+}
 
-export const validateUserToken = (token) => {
+export function validateUserToken(token) {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     return payload;
@@ -24,4 +24,4 @@ export const validateUserToken = (token) => {
     console.log(error);
     return null;
   }
-};
+}

@@ -3,18 +3,12 @@ import { shortenPostRequestBodySchema } from "../validations/request.validations
 import { db } from "../db/index.js";
 import { urlsTable } from "../models/index.js";
 import { nanoid } from "nanoid";
+import { ensureAuthenticated } from "../middlewares/auth.middleware.js";
+import { createShortenUrl } from "../services/urls.services.js";
 
 const router = express.Router();
 
-router.post("/shorten", async (req, res) => {
-  const userID = req.user?.id;
-
-  if (!userID) {
-    return res
-      .status(401)
-      .json({ error: "You must be logged in to access this resource." });
-  }
-
+router.post("/shorten", ensureAuthenticated, async (req, res) => {
   const validationResult = await shortenPostRequestBodySchema.safeParseAsync(
     req.body,
   );
@@ -26,26 +20,18 @@ router.post("/shorten", async (req, res) => {
   const { url, code } = validationResult.data;
   const shortCode = code ?? nanoid(6);
 
-  const [result] = await db
-    .insert(urlsTable)
-    .values({
-      userId: req.user.id,
-      shortCode,
-      targetURL: url,
-    })
-    .returning({
-      id: urlsTable.id,
-      shortCode: urlsTable.shortCode,
-      targetURL: urlsTable.targetURL,
-    });
+  // Create a Shorten Url
+  const result = await createShortenUrl({
+    userId: req.user.id,
+    targetURL: url,
+    shortCode,
+  });
 
-  return res
-    .status(201)
-    .json({
-      id: result.id,
-      shortCode: result.shortCode,
-      targetURL: result.targetURL,
-    });
+  return res.status(201).json({
+    id: result.id,
+    targetURL: result.targetURL,
+    shortCode: result.shortCode,
+  });
 });
 
 export default router;

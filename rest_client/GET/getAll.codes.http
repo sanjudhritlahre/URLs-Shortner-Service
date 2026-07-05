@@ -1,2 +1,4 @@
+# GET ('/codes') Get your all shorten codes you have created!
+
 GET http://localhost:8000/codes
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlNTJhYjJiLWMzMGItNDI4Ny05NGNlLTI5NDAzNTA5MWQyYyIsImlhdCI6MTc4MzI5MDA3MywiZXhwIjoxNzgzODk0ODczfQ.rJKInp_LfAOHOCl4h4Z6Uf4rav2weOYMdjd9yR7hIrM

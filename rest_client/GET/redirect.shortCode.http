@@ -1,1 +1,3 @@
+# GET ('/shortCode') Give a shortcode to redirect to your destination url!
+
 GET http://localhost:8000/shortCode

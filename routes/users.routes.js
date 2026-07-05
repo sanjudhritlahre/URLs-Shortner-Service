@@ -1,13 +1,10 @@
 import express from "express";
 import { db } from "../db/index.js";
 import { usersTable } from "../models/users.models.js";
-import {
-  signUpPostRequestSchema,
-  loginPostRequestBodySchema,
-} from "../validations/request.validations.js";
+import { signUpPostRequestSchema, loginPostRequestBodySchema } from "../validations/request.validations.js";
 import { hashPasswordWithSalt } from "../utils/hash.utils.js";
 import { getUserByEmail, createUser } from "../services/users.services.js";
-import jwt from "jsonwebtoken";
+import { createUserToken } from "../utils/token.utils.js";
 
 const router = express.Router();
 
@@ -89,9 +86,7 @@ router.post("/login", async (req, res) => {
       throw new Error("JWT_SECRET_KEY is not configured.");
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const token = await createUserToken({id: user.id});
 
     return res.json({ token });
   } catch (error) {

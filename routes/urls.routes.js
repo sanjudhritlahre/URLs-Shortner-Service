@@ -5,7 +5,7 @@ import { urlsTable } from "../models/index.js";
 import { nanoid } from "nanoid";
 import { ensureAuthenticated } from "../middlewares/auth.middleware.js";
 import { createShortenUrl } from "../services/urls.services.js";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const router = express.Router();
 
